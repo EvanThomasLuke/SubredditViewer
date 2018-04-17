@@ -5,6 +5,8 @@ import android.graphics.Movie;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -12,18 +14,129 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.loopj.android.http.JsonHttpResponseHandler;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+
+import cz.msebera.android.httpclient.Header;
 
 /**
  * Created by evanluke on 4/16/18.
  */
 
-public class SubredditDetailActivity {
+public class SubredditDetailActivity extends AppCompatActivity {
+
+
+    ArrayList<Comment> comments;
+    CommentAdapter adapter;
+    RedditClient client;
+    //public static final String SUBREDDIT_DETAIL_KEY = "subreddit";
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.subreddit_detail_activity);
+
+
+        RecyclerView rvComments = (RecyclerView) findViewById(R.id.rvComments);
+        rvComments.setHasFixedSize(true);
+        comments = new ArrayList<Comment>();
+        adapter = new CommentAdapter(this, comments);
+        rvComments.setAdapter(adapter);
+
+        // Set layout manager to position the items
+        rvComments.setLayoutManager(new LinearLayoutManager(this));
+/*        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2, GridLayoutManager.VERTICAL, false);
+        rvMovies.setLayoutManager(gridLayoutManager);*/
+
+        String intentKey = getIntent().getStringExtra(MainActivity.SUBREDDIT_DETAIL_KEY);
+
+//TODO figure out why it wasn't working this way, just pass it the key now instead of passing whole
+        //object
+//https://stackoverflow.com/questions/23142893/parcelable-encountered-ioexception-writing-serializable-object-getactivity
+//        Intent intent = getIntent().getSerializableExtra(MainActivity.SUBREDDIT_DETAIL_KEY);
+  //      Subreddit subreddit = (Subreddit) getIntent().getSerializableExtra(MainActivity.SUBREDDIT_DETAIL_KEY);
+
+
+//TODO GET INTENT HERE THEN PASS IN ID TO FETCH COMMENTS
+        fetchComments(intentKey);
+
+        adapter.setOnItemClickListener(new SubredditAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                //String title = movies.get(position).getName();
+               // Subreddit clickedSubreddit = comments.get(position);
+                //Toast.makeText(MainActivity.this, title, Toast.LENGTH_LONG).show();
+
+                //Launch detail view passing movie as an extra
+                //Intent intent = new Intent(MainActivity.this, SubredditDetailActivity.class);
+                //had to cast Movie object to Serializable idk if it will work
+                //intent.putExtra(SUBREDDIT_DETAIL_KEY, clickedSubreddit);
+                //startActivity(intent);
+
+            }
+        });
+    }
+
+//TODO FINISH THIS FETCH COMMENTS ()
+
+    private void fetchComments(String query) {
+        client = new RedditClient();
+        client.getComments(query, new JsonHttpResponseHandler() {
+            //TODO changed from JSONObject to JSONArray in args
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+
+                Toast toast = Toast.makeText(SubredditDetailActivity.this, "Success on api call" , Toast.LENGTH_LONG);
+                toast.show();
+                try {
+                    JSONObject listing = null;
+                    //JSONArray docs = null;
+                    JSONArray data;
+                    if(response != null) {
+
+                        //listing = response.getJSONObject("data");
+                        //data = listing.getJSONArray("children");
+                        Toast toast1 = Toast.makeText(SubredditDetailActivity.this, "Success on updated subreddits" , Toast.LENGTH_LONG);
+                        toast1.show();
+                        //jsonObject = response.getJSONObject("results");
+                        //docs = jsonObject.getJSONArray("results");
+
+                        final ArrayList<Comment> updatedComments = Comment.fromJson(response);
+
+                        adapter.swap(updatedComments);
+                        //using this method we notifyDatasetChanged in the adapter
+                        //I dont think we have to do it here
+
+
+                        //adapter.clear();
+
+                        //movies.addAll()
+
+
+/*                        for (News newsObject : news) {
+                            newsAdapter.add(newsObject);
+                        }
+                        newsAdapter.notifyDataSetChanged();*/
+
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        });
+    }
 
 
 }
+
+
 
 /*
 package com.example.evanluke.movieapp;

@@ -20,6 +20,8 @@ public class RedditClient {
 //TODO Add functionality for multiple subreddits
         //TODO add functionality for comments view api call
 
+    //TODO ADD dynamic url for comments and subreddits
+        private static final String API_BASE_COMMENT_URL = "https://www.reddit.com/r/pics/comments/8cqtmj/my_brothers_tombstone_after_his_passing_from_the/.json";
         private static final String API_BASE_URL = "https://www.reddit.com/r/askscience.json";
 
         private static final String API_BASE_URL_TRAILER = "https://api.themoviedb.org/3/movie/";
@@ -70,6 +72,19 @@ public class RedditClient {
             }
 
         }*/
+
+
+        public void getComments(final String query, JsonHttpResponseHandler handler) {
+
+            String url = query + ".json";
+            client.get(url, handler);
+            try {
+                client.get(URLEncoder.encode(API_BASE_URL, "utf-8"), handler);
+            } catch (UnsupportedEncodingException e){
+                e.printStackTrace();
+            }
+
+        }
 
     }
 

@@ -4,13 +4,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * Created by evanluke on 4/17/18.
  */
 
-public class Comment {
+public class Comment implements Serializable {
 
     private String subredditId;
     private String linkId;
@@ -21,7 +22,7 @@ public class Comment {
     private int score;
     private String body;
     private String permalink;
-    private String created;
+    private int created;
     private int depth;
 
     public String getSubredditId() {
@@ -60,7 +61,7 @@ public class Comment {
         return permalink;
     }
 
-    public String getCreated() {
+    public int getCreated() {
         return created;
     }
 
@@ -68,10 +69,17 @@ public class Comment {
         return depth;
     }
 
+    //TODO add static method getInnerComments()
+    //To get a comments nested comments
+    //create a static method? populate a comments innerCommentsArrayList
+    //on click run that static method
+    //and update the recycler view
 
-    public static Subreddit fromJson(JSONObject jsonObject) {
+
+
+    public static Comment fromJson(JSONObject jsonObject) {
         JSONObject data = null;
-        Subreddit a = new Subreddit();
+        Comment a = new Comment();
         //ArrayList<Comments> commentsArrayList = new ArrayList<>();
         try {
             data = jsonObject.getJSONObject("data");
@@ -79,18 +87,17 @@ public class Comment {
             try {
                 //Deserialize json into object fields
                 a.subredditId = data.getString("subreddit_id");
-                a.subreddit = data.getString("subreddit");
-                a.selfText = data.getString("selftext");
+                a.linkId = data.getString("link_id");
+                a.replies = data.getJSONObject("replies");
                 a.id = data.getString("id");
                 a.author = data.getString("author");
-                a.secureMediaEmbed = data.getJSONObject("secure_media_embed");
-                a.mediaEmbed = data.getJSONObject("media_embed");
-                a.name = data.getString("name");
-                a.url = data.getString("url");
+                a.parentId = data.getString("parent_id");
+                a.score = data.getInt("score");
+                a.body = data.getString("body");
+                a.permalink = data.getString("permalink");
                 a.created = data.getInt("created");
-                a.numComments = data.getInt("num_comments");
-                a.title = data.getString("title");
-                a.isVideo = data.getBoolean("is_video");
+                a.depth = data.getInt("depth");
+
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -103,21 +110,49 @@ public class Comment {
         return a;
     }
 
-
     // Decodes array of movie json results into business model objects
-    public static ArrayList<Subreddit> fromJson(JSONArray jsonArray) {
-        ArrayList<Subreddit> businesses = new ArrayList<Subreddit>(jsonArray.length());
+    public static ArrayList<Comment> fromJson(JSONArray jsonArray) throws JSONException {
+        ArrayList<Comment> businesses = new ArrayList<Comment>(jsonArray.length());
         // Process each result in json array, decode and convert to business object
-        for (int i = 0; i < jsonArray.length(); i++) {
+     //TODO decide if start at i=0 to get the main title comment ...
+        JSONObject depth0 = null;
+        JSONObject depth0Data;
+        JSONArray depth0DataChildrenArray;
+
+
+        try {
+            depth0 = jsonArray.getJSONObject(1);
+
+            try {
+                depth0Data = depth0.getJSONObject("data");
+                try {
+                    depth0DataChildrenArray = depth0Data.getJSONArray("children");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+
+
+
+
+        for (int i = 1; i < depth0DataChildrenArray.length(); i++) {
             JSONObject businessJson = null;
             try {
-                businessJson = jsonArray.getJSONObject(i);
+                businessJson = depth0DataChildrenArray.getJSONObject(i);
             } catch (Exception e) {
                 e.printStackTrace();
                 continue;
             }
 
-            Subreddit business = Subreddit.fromJson(businessJson);
+            Comment business = Comment.fromJson(businessJson);
             if (business != null) {
                 businesses.add(business);
             }
@@ -165,4 +200,4 @@ and top back button to go back
 
      */
 
-}
+

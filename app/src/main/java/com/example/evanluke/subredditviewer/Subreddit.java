@@ -13,7 +13,7 @@ import java.util.ArrayList;
  * Created by evanluke on 4/16/18.
  */
 
-public class Subreddit implements Serializable{
+public class Subreddit implements Serializable {
     //TODO decide /research whether use parcelable or serializable what is less memory usage and faster
     private String subredditId;
     private String subreddit;

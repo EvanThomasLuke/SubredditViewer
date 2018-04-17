@@ -58,12 +58,15 @@ public class MainActivity extends AppCompatActivity {
             public void onItemClick(View view, int position) {
                 //String title = movies.get(position).getName();
                 Subreddit clickedSubreddit = subreddits.get(position);
+                //TODO add functionality decide get key or url or what to perform api call
+                //on the thread
+                String clickedSubredditKey = clickedSubreddit.getUrl();
                 //Toast.makeText(MainActivity.this, title, Toast.LENGTH_LONG).show();
 
                 //Launch detail view passing movie as an extra
                 Intent intent = new Intent(MainActivity.this, SubredditDetailActivity.class);
                 //had to cast Movie object to Serializable idk if it will work
-                intent.putExtra(SUBREDDIT_DETAIL_KEY, clickedSubreddit);
+                intent.putExtra(SUBREDDIT_DETAIL_KEY, clickedSubredditKey);
                 startActivity(intent);
 
             }
