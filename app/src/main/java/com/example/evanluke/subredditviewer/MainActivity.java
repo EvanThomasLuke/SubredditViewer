@@ -51,6 +51,8 @@ public class MainActivity extends AppCompatActivity {
 /*        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2, GridLayoutManager.VERTICAL, false);
         rvMovies.setLayoutManager(gridLayoutManager);*/
 
+//TODO add loading symbol while loading, test it
+
         fetchSubreddits("test");
 
         adapter.setOnItemClickListener(new SubredditAdapter.OnItemClickListener() {
@@ -60,7 +62,10 @@ public class MainActivity extends AppCompatActivity {
                 Subreddit clickedSubreddit = subreddits.get(position);
                 //TODO add functionality decide get key or url or what to perform api call
                 //on the thread
-                String clickedSubredditKey = clickedSubreddit.getUrl();
+
+                //String clickedSubredditKey = clickedSubreddit.getUrl();
+                String clickedSubredditKey = clickedSubreddit.getPermalink();
+
                 //Toast.makeText(MainActivity.this, title, Toast.LENGTH_LONG).show();
 
                 //Launch detail view passing movie as an extra
@@ -75,6 +80,8 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void fetchSubreddits(String query) {
+        //TODO create multiple Reddit clients? to retrieve all the subreddit subscriptions
+
         client = new RedditClient();
         client.getSubreddits(query, new JsonHttpResponseHandler() {
             @Override

@@ -62,6 +62,7 @@ public class SubredditDetailActivity extends AppCompatActivity {
 //        Intent intent = getIntent().getSerializableExtra(MainActivity.SUBREDDIT_DETAIL_KEY);
   //      Subreddit subreddit = (Subreddit) getIntent().getSerializableExtra(MainActivity.SUBREDDIT_DETAIL_KEY);
 
+        //TODO Add loading symbol while it retrieves comments
 
 //TODO GET INTENT HERE THEN PASS IN ID TO FETCH COMMENTS
         fetchComments(intentKey);

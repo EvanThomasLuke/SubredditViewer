@@ -29,6 +29,7 @@ public class Subreddit implements Serializable {
     private int numComments;
     private String title;
     private boolean isVideo;
+    private String permalink;
 
     public String getSubredditId() {
         return subredditId;
@@ -84,7 +85,9 @@ public class Subreddit implements Serializable {
     public String getThumbnail() {
         return thumbnail;
     }
-
+    public String getPermalink() {
+        return permalink;
+    }
 
     public static Subreddit fromJson(JSONObject jsonObject) {
         JSONObject data = null;
@@ -100,6 +103,7 @@ public class Subreddit implements Serializable {
                 a.selfText = data.getString("selftext");
                 a.id = data.getString("id");
                 a.author = data.getString("author");
+                a.thumbnail = data.getString("thumbnail");
                 a.secureMediaEmbed = data.getJSONObject("secure_media_embed");
                 a.mediaEmbed = data.getJSONObject("media_embed");
                 a.name = data.getString("name");
@@ -108,6 +112,7 @@ public class Subreddit implements Serializable {
                 a.numComments = data.getInt("num_comments");
                 a.title = data.getString("title");
                 a.isVideo = data.getBoolean("is_video");
+                a.permalink = data.getString("permalink");
 
             } catch (JSONException e) {
                 e.printStackTrace();

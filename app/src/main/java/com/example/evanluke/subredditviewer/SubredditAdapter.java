@@ -124,6 +124,9 @@ public class SubredditAdapter extends RecyclerView.Adapter<SubredditAdapter.View
         // Set item views based on your views and data model
         ImageView imageView = viewHolder.subredditImageView;
         //TODO fix this thumbnails contain empty string on test thread
+        if (subreddit.getThumbnail() != "") {
+            Picasso.with(getContext()).load(Uri.parse(subreddit.getThumbnail())).error(R.drawable.ic_nocover).into(imageView);
+        }
 //        Picasso.with(getContext()).load(Uri.parse(subreddit.getThumbnail())).error(R.drawable.ic_nocover).into(imageView);
         TextView titleTextView = viewHolder.subredditTitle;
         titleTextView.setText(subreddit.getTitle());

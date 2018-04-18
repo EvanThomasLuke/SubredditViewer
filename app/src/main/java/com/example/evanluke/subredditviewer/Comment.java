@@ -1,5 +1,7 @@
 package com.example.evanluke.subredditviewer;
 
+import android.widget.Toast;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -110,6 +112,40 @@ public class Comment implements Serializable {
         return a;
     }
 
+    //Method to get Title Comment Object and turn into Comment Object
+    //TODO finish filling this method out. To get more info like "preview" and "score" "num comments"
+
+    public static Comment fromJsonTitle(JSONObject jsonObject) {
+        //TODO remove this data variable just use the jsonObject param
+        JSONObject data = jsonObject;
+        Comment a = new Comment();
+
+        try {
+            //data = jsonObject.getJSONObject("")
+            //Deserialize json into object fields
+            a.subredditId = data.getString("subreddit_id");
+            //a.linkId = data.getString("link_id");
+            //a.replies = data.getJSONObject("replies");
+            a.id = data.getString("id");
+            a.author = data.getString("author");
+            //a.parentId = data.getString("parent_id");
+            a.score = data.getInt("score");
+            //TODO CHANGE THIS FROM BODY TO TITLE, add new comment class for Title
+            a.body = data.getString("title");
+            a.permalink = data.getString("permalink");
+            a.created = data.getInt("created");
+            //a.depth = data.getInt("depth");
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+
+            return null;
+        }
+
+        return a;
+    }
+
     // Decodes array of movie json results into business model objects
     public static ArrayList<Comment> fromJson(JSONArray jsonArray) throws JSONException {
         ArrayList<Comment> businesses = new ArrayList<Comment>(jsonArray.length());
@@ -119,6 +155,25 @@ public class Comment implements Serializable {
         JSONObject depth0Data;
         JSONArray depth0DataChildrenArray;
 
+        JSONObject titleComment = null;
+        JSONObject titleCommentData = null;
+        JSONArray titleCommentDataChildren;
+        JSONObject titleCommentDataChildrenFirstObject;
+        JSONObject titleCommentDataChildrenFirstObjectData;
+
+
+
+        try {
+            titleComment = jsonArray.getJSONObject(0);
+            titleCommentData = titleComment.getJSONObject("data");
+            titleCommentDataChildren = titleCommentData.getJSONArray("children");
+            titleCommentDataChildrenFirstObject = titleCommentDataChildren.getJSONObject(0);
+            titleCommentDataChildrenFirstObjectData = titleCommentDataChildrenFirstObject.getJSONObject("data");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
 
         try {
             depth0 = jsonArray.getJSONObject(1);
@@ -141,7 +196,12 @@ public class Comment implements Serializable {
         }
 
 
-
+        //Add title Comment Object to first index of depth0DataChildrenArray
+        Comment titleBusiness = Comment.fromJsonTitle(titleCommentDataChildrenFirstObjectData);
+        //TODO make sure this works since title comment might have different properties
+        if (titleBusiness != null) {
+            businesses.add(titleBusiness);
+        }
 
         for (int i = 1; i < depth0DataChildrenArray.length(); i++) {
             JSONObject businessJson = null;
@@ -151,7 +211,7 @@ public class Comment implements Serializable {
                 e.printStackTrace();
                 continue;
             }
-
+            //Use static method fromJson to create a single Comment object
             Comment business = Comment.fromJson(businessJson);
             if (business != null) {
                 businesses.add(business);
@@ -160,6 +220,21 @@ public class Comment implements Serializable {
 
         return businesses;
     }
+
+    //Method for retrieving Comments Children
+  //  public static ArrayList<Comment> getReplies(JSONArray jsonArray) throws JSONException {
+  //  ArrayList<Comment> repliesArrayList = new ArrayList<Comment>(jsonArray.length());
+
+  //  }
+
+    //Method for retrieving depth 10 comment thread
+    //TODO SHOULD THESE BE STATIC?
+    //public static
+
+
+
+
+
 }
 
 

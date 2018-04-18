@@ -22,11 +22,16 @@ public class RedditClient {
 
     //TODO ADD dynamic url for comments and subreddits
         private static final String API_BASE_COMMENT_URL = "https://www.reddit.com/r/pics/comments/8cqtmj/my_brothers_tombstone_after_his_passing_from_the/.json";
-        private static final String API_BASE_URL = "https://www.reddit.com/r/askscience.json";
+        private static final String API_BASE_URL = "https://www.reddit.com/r/pics.json";
+
+        private static final String API_BASE_URL_SEARCH_SUBREDDITS = "";
 
         private static final String API_BASE_URL_TRAILER = "https://api.themoviedb.org/3/movie/";
         private static final String API_END_URL_TRAILER = "/videos?api_key=";
         private static final String API_END_URL = "&api-key=";
+
+        private static final String API_BASE_PERMALINK = "https://www.reddit.com";
+
         private AsyncHttpClient client;
 
         public RedditClient() {
@@ -59,24 +64,16 @@ public class RedditClient {
         }
         */
         }
-/*
-        public void getMovieTrailer(final String query, JsonHttpResponseHandler handler) {
 
-            String url = API_BASE_URL_TRAILER + query + API_END_URL_TRAILER;
-            client.get(url, handler);
-            //TODO figure out if I need this line above
-            try {
-                client.get(URLEncoder.encode(url , "utf-8"), handler);
-            } catch (UnsupportedEncodingException e){
-                e.printStackTrace();
-            }
+        //Method for finding subreddits to subscribe to
+        public void findSubreddits(final String query, JsonHttpResponseHandler handler) {
 
-        }*/
+        }
 
 
         public void getComments(final String query, JsonHttpResponseHandler handler) {
 
-            String url = query + ".json";
+            String url = API_BASE_PERMALINK + query + ".json";
             client.get(url, handler);
             try {
                 client.get(URLEncoder.encode(API_BASE_URL, "utf-8"), handler);
