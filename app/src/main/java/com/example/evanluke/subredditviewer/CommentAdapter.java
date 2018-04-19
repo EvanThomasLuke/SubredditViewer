@@ -1,5 +1,6 @@
 package com.example.evanluke.subredditviewer;
 
+import android.graphics.Typeface;
 import android.support.v7.widget.RecyclerView;
 
 
@@ -15,6 +16,8 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
@@ -63,6 +66,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
             // to access the context from any ViewHolder instance.
             super(itemView);
 
+            //TODO add indent here?
             commentImageView = (ImageView) itemView.findViewById(R.id.subredditImageView);
             subredditTitle = (TextView) itemView.findViewById(R.id.titleTextView);
             commentBodyText = (TextView) itemView.findViewById(R.id.bodyTextView);
@@ -129,10 +133,21 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
         //TextView titleTextView = viewHolder.subredditTitle;
         //titleTextView.setText(comment.getTitle());
 
+        //TODO add indent based on number
+        //just set it here if depth 1 multiply it by 10dp etc...
+        if (comment.getDepth() != 0) {
+
+        }
+
         TextView author = viewHolder.commentAuthorText;
         author.setText(comment.getAuthor());
         TextView body = viewHolder.commentBodyText;
         body.setText(comment.getBody());
+
+        if (comment.getDepth() != 0) {
+            body.setTypeface(null, Typeface.BOLD);
+        }
+
       //  TextView selfTextView = viewHolder.subredditSelfText;
        // selfTextView.setText(comment.getSelfText());
 
@@ -180,6 +195,48 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
         }
     }
 
+    //Add replies to comments here
+    public void addItemsAtPosition(ArrayList<Comment> comments, int position) {
+        //Try this add it fake comment object just declare it here
+        Comment comment = comments.get(position);
+        JSONArray children;
+        ArrayList<Comment> commentsArrayList;
+
+        //Call RedditClient here get api request?
+        //Or call it on subreddit detail activity?
+
+        //Get the comment id here then use comment class to get
+        JSONObject commentReplies = comment.getReplies();
+        try {
+            JSONObject commentRepliesData = commentReplies.getJSONObject("data");
+            children = commentRepliesData.getJSONArray("children");
+            commentsArrayList = Comment.fromJsonChildren(children);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+
+/*        if (children != null) {
+
+            Comment.fromJson(children);
+        }*/
+
+        //TODO Add all comments. Only adding one. Do it manually?
+        //if comment depth 10 get the url and use RedditClient to api call
+        if (commentsArrayList != null) {
+            for (int i = 0; i < commentsArrayList.size(); i++) {
+                mComments.add(position , commentsArrayList.get(i));
+                //notifyItemInserted(position + i);
+
+            }
+            //WORKS ADDs ONE mComments.addAll(position, commentsArrayList);
+            //mComments.add(position + 1, comment);
+            //notifyItemInserted(position);
+            //notifyDataSetChanged();
+            notifyItemRangeInserted(position + 1, commentsArrayList.size());
+        }
+
+    }
 
     public void swap(ArrayList<Comment> comments)
     {

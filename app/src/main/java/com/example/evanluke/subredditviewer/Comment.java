@@ -78,19 +78,42 @@ public class Comment implements Serializable {
     //and update the recycler view
 
 
+    //TODO add method to get first 5 replies of depth 1 comment...
+
 
     public static Comment fromJson(JSONObject jsonObject) {
         JSONObject data = null;
         Comment a = new Comment();
+        //Object aObj = null;
         //ArrayList<Comments> commentsArrayList = new ArrayList<>();
         try {
             data = jsonObject.getJSONObject("data");
 
             try {
                 //Deserialize json into object fields
-                a.subredditId = data.getString("subreddit_id");
-                a.linkId = data.getString("link_id");
-                a.replies = data.getJSONObject("replies");
+                if (data.has("subreddit_id")) {
+
+                    a.subredditId = data.getString("subreddit_id");
+
+                } else {
+                    a.subredditId = null;
+                }
+                //a.subredditId = data.getString("subreddit_id");
+                if (data.has("link_id")) {
+                    a.linkId = data.getString("link_id");
+                }
+                //Check if "replies" is a JSONObject if not it is "" in api return
+                if (data.get("replies") instanceof JSONObject && data.get("replies") != "") {
+                    a.replies = data.getJSONObject("replies");
+                } else {
+                    a.replies = null;
+                }
+ /*               aObj = data.get("replies");
+                if (aObj instanceof String) {
+                    a.replies = data.getJSONObject("replies");
+                }*/
+
+                //a.replies = data.getJSONObject("replies");
                 a.id = data.getString("id");
                 a.author = data.getString("author");
                 a.parentId = data.getString("parent_id");
@@ -166,6 +189,7 @@ public class Comment implements Serializable {
         try {
             titleComment = jsonArray.getJSONObject(0);
             titleCommentData = titleComment.getJSONObject("data");
+            //TODO add catch block if it hs no children still get json exception why?
             titleCommentDataChildren = titleCommentData.getJSONArray("children");
             titleCommentDataChildrenFirstObject = titleCommentDataChildren.getJSONObject(0);
             titleCommentDataChildrenFirstObjectData = titleCommentDataChildrenFirstObject.getJSONObject("data");
@@ -220,6 +244,36 @@ public class Comment implements Serializable {
 
         return businesses;
     }
+
+    public static ArrayList<Comment> fromJsonChildren(JSONArray jsonArray) throws JSONException {
+        ArrayList<Comment> businesses = new ArrayList<Comment>(jsonArray.length());
+
+        //Array of children
+        //Go inside each child object and get data object
+        //That happens inside fromJson(JSONObject)
+        for (int i = 1; i < jsonArray.length(); i++) {
+            JSONObject businessJson = null;
+            try {
+                businessJson = jsonArray.getJSONObject(i);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                continue;
+            }
+            //Use static method fromJson to create a single Comment object
+            Comment business = Comment.fromJson(businessJson);
+            if (business != null) {
+                businesses.add(business);
+            }
+
+        }
+
+        return businesses;
+
+
+
+    }
+
 
     //Method for retrieving Comments Children
   //  public static ArrayList<Comment> getReplies(JSONArray jsonArray) throws JSONException {

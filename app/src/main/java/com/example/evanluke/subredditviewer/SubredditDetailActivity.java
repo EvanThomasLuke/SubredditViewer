@@ -35,7 +35,7 @@ public class SubredditDetailActivity extends AppCompatActivity {
     CommentAdapter adapter;
     RedditClient client;
     //public static final String SUBREDDIT_DETAIL_KEY = "subreddit";
-
+    ArrayList<Comment> updatedComments;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +70,24 @@ public class SubredditDetailActivity extends AppCompatActivity {
         adapter.setOnItemClickListener(new SubredditAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
+
+                //Either use pre-existing method or add a method like
+                //                        adapter.swap(updatedComments);
+                //notifyItemChanged(int pos);
+                //notifyItemRangeInserted()
+
+                //loop over array? or add multiple items?
+                //TODO handle case where in json object replies: ""
+                Comment comment = updatedComments.get(position);
+                if (comment.getReplies() != null) {
+                    adapter.addItemsAtPosition(updatedComments, position);
+                }
+                //TODO LOG THE REPLIES SIZE
+                Toast toast1 = Toast.makeText(SubredditDetailActivity.this, "Success on updated subreddits" , Toast.LENGTH_LONG);
+                toast1.show();
+                //adapter.notifyItemInserted(position);
+
+
                 //String title = movies.get(position).getName();
                // Subreddit clickedSubreddit = comments.get(position);
                 //Toast.makeText(MainActivity.this, title, Toast.LENGTH_LONG).show();
@@ -108,8 +126,9 @@ public class SubredditDetailActivity extends AppCompatActivity {
                         //jsonObject = response.getJSONObject("results");
                         //docs = jsonObject.getJSONArray("results");
 
-                        final ArrayList<Comment> updatedComments = Comment.fromJson(response);
-
+                        //removed 4.18.18
+                       // final ArrayList<Comment> updatedComments = Comment.fromJson(response);
+                        updatedComments = Comment.fromJson(response);
                         adapter.swap(updatedComments);
                         //using this method we notifyDatasetChanged in the adapter
                         //I dont think we have to do it here
