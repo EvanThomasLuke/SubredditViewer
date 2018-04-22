@@ -26,6 +26,9 @@ public class Comment implements Serializable {
     private String permalink;
     private int created;
     private int depth;
+    private boolean clicked;
+
+    private int repliesLength;
 
     public String getSubredditId() {
         return subredditId;
@@ -69,6 +72,23 @@ public class Comment implements Serializable {
 
     public int getDepth() {
         return depth;
+    }
+
+    public boolean getClicked() {
+        return clicked;
+    }
+
+    public boolean setClicked(boolean clicked) {
+        this.clicked = clicked;
+        return clicked;
+    }
+
+    public int getRepliesLength() {
+        return repliesLength;
+    }
+
+    public void setRepliesLength(int repliesLength) {
+        this.repliesLength = repliesLength;
     }
 
     //TODO add static method getInnerComments()

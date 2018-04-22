@@ -78,12 +78,25 @@ public class SubredditDetailActivity extends AppCompatActivity {
 
                 //loop over array? or add multiple items?
                 //TODO handle case where in json object replies: ""
+                //TODO finish get replies full functionality
                 Comment comment = updatedComments.get(position);
-                if (comment.getReplies() != null) {
-                    adapter.addItemsAtPosition(updatedComments, position);
+                if (comment.getClicked() != true) {
+                    comment.setClicked(true);
+                    //This length hasn't been set yet
+                    
+                    if (comment.getReplies() != null) {
+                        adapter.addItemsAtPosition(updatedComments, position);
+                        // TRY THIS HAVEN'T TRIED 4.20.18
+                        // adapter.notifyDataSetChanged();
+
+                    }
+                } else {
+                    Toast toast2 = Toast.makeText(SubredditDetailActivity.this, "remove comments called" , Toast.LENGTH_LONG);
+                    toast2.show();
+                    adapter.removeItemsAtPosition(comment, position);
                 }
                 //TODO LOG THE REPLIES SIZE
-                Toast toast1 = Toast.makeText(SubredditDetailActivity.this, "Success on updated subreddits" , Toast.LENGTH_LONG);
+                Toast toast1 = Toast.makeText(SubredditDetailActivity.this, comment.getRepliesLength() + "" , Toast.LENGTH_LONG);
                 toast1.show();
                 //adapter.notifyItemInserted(position);
 
@@ -121,7 +134,7 @@ public class SubredditDetailActivity extends AppCompatActivity {
 
                         //listing = response.getJSONObject("data");
                         //data = listing.getJSONArray("children");
-                        Toast toast1 = Toast.makeText(SubredditDetailActivity.this, "Success on updated subreddits" , Toast.LENGTH_LONG);
+                        Toast toast1 = Toast.makeText(SubredditDetailActivity.this, "Success Comments" , Toast.LENGTH_LONG);
                         toast1.show();
                         //jsonObject = response.getJSONObject("results");
                         //docs = jsonObject.getJSONArray("results");

@@ -136,7 +136,8 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
         //TODO add indent based on number
         //just set it here if depth 1 multiply it by 10dp etc...
         if (comment.getDepth() != 0) {
-
+            int depth = 100 * comment.getDepth();
+            viewHolder.itemView.setPadding(depth ,0,0,0);
         }
 
         TextView author = viewHolder.commentAuthorText;
@@ -224,11 +225,14 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
         //TODO Add all comments. Only adding one. Do it manually?
         //if comment depth 10 get the url and use RedditClient to api call
         if (commentsArrayList != null) {
+            comment.setRepliesLength(commentsArrayList.size());
+/*
             for (int i = 0; i < commentsArrayList.size(); i++) {
                 mComments.add(position , commentsArrayList.get(i));
                 //notifyItemInserted(position + i);
 
-            }
+            }*/
+            mComments.addAll(position + 1, commentsArrayList);
             //WORKS ADDs ONE mComments.addAll(position, commentsArrayList);
             //mComments.add(position + 1, comment);
             //notifyItemInserted(position);
@@ -236,6 +240,17 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
             notifyItemRangeInserted(position + 1, commentsArrayList.size());
         }
 
+    }
+
+    public void removeItemsAtPosition(Comment comment, int position) {
+
+        //TODO try removeAll no loop like above
+        for(int i = 0; i < comment.getRepliesLength(); i++ ) {
+            mComments.remove(position + i);
+        }
+        //
+        notifyItemRangeChanged(position + 1 , comment.getRepliesLength());
+        //Comments.remove()
     }
 
     public void swap(ArrayList<Comment> comments)
