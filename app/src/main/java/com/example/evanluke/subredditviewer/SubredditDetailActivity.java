@@ -36,12 +36,15 @@ public class SubredditDetailActivity extends AppCompatActivity {
     RedditClient client;
     //public static final String SUBREDDIT_DETAIL_KEY = "subreddit";
     ArrayList<Comment> updatedComments;
+    Button urlButton;
+    String intentKey;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.subreddit_detail_activity);
 
+        urlButton = (Button) findViewById(R.id.urlButton);
 
         RecyclerView rvComments = (RecyclerView) findViewById(R.id.rvComments);
         rvComments.setHasFixedSize(true);
@@ -54,8 +57,16 @@ public class SubredditDetailActivity extends AppCompatActivity {
 /*        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2, GridLayoutManager.VERTICAL, false);
         rvMovies.setLayoutManager(gridLayoutManager);*/
 
-        String intentKey = getIntent().getStringExtra(MainActivity.SUBREDDIT_DETAIL_KEY);
-
+        intentKey = getIntent().getStringExtra(MainActivity.SUBREDDIT_DETAIL_KEY);
+        urlButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //use intentKey var
+                //intent to view in browser
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.reddit.com" + intentKey));
+                startActivity(browserIntent);
+            }
+        });
 //TODO figure out why it wasn't working this way, just pass it the key now instead of passing whole
         //object
 //https://stackoverflow.com/questions/23142893/parcelable-encountered-ioexception-writing-serializable-object-getactivity
@@ -83,9 +94,9 @@ public class SubredditDetailActivity extends AppCompatActivity {
                 if (comment.getClicked() != true) {
                     comment.setClicked(true);
                     //This length hasn't been set yet
-                    
+
                     if (comment.getReplies() != null) {
-                        adapter.addItemsAtPosition(updatedComments, position);
+                        adapter.addItemsAtPosition(comment, position);
                         // TRY THIS HAVEN'T TRIED 4.20.18
                         // adapter.notifyDataSetChanged();
 

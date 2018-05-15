@@ -27,6 +27,33 @@ public class Comment implements Serializable {
     private int created;
     private int depth;
     private boolean clicked;
+    private String thumbnail;
+    private JSONArray images;
+    private String imageUrl;
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public JSONArray getImages() {
+        return images;
+    }
+
+    public void setImages(JSONArray images) {
+        this.images = images;
+    }
+
+    public String getThumbnail() {
+        return thumbnail;
+    }
+
+    public void setThumbnail(String thumbnail) {
+        this.thumbnail = thumbnail;
+    }
 
     private int repliesLength;
 
@@ -161,7 +188,12 @@ public class Comment implements Serializable {
     public static Comment fromJsonTitle(JSONObject jsonObject) {
         //TODO remove this data variable just use the jsonObject param
         JSONObject data = jsonObject;
+        JSONObject preview = jsonObject;
+        JSONArray images;
+        JSONArray resolutions;
         Comment a = new Comment();
+        JSONObject imageUrl;
+        JSONObject resolutionsObject;
 
         try {
             //data = jsonObject.getJSONObject("")
@@ -178,6 +210,20 @@ public class Comment implements Serializable {
             a.permalink = data.getString("permalink");
             a.created = data.getInt("created");
             //a.depth = data.getInt("depth");
+            //  todo add all this if its not null, so it will work for all threads
+            a.thumbnail = data.getString("thumbnail");
+            preview = data.getJSONObject("preview");
+            //a.images = preview.getJSONArray("images");
+            images = preview.getJSONArray("images");
+            resolutionsObject = images.getJSONObject(0);
+            resolutions = resolutionsObject.getJSONArray("resolutions");
+            imageUrl = resolutions.getJSONObject(2);
+//            a.images = images.getJSONArray(1);
+            //todo add functionality to get all images and adjust for size
+            //imageUrl = resolutions.getJSONObject(2);
+            //a.imageUrl = imageUrl.getString("url");
+            a.imageUrl = resolutionsObject.getJSONObject("source").getString("url");
+            //a.imageUrl = resolutions.getJSONObject(3).getString("url");
 
 
         } catch (JSONException e) {

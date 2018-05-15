@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -67,7 +68,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
             super(itemView);
 
             //TODO add indent here?
-            commentImageView = (ImageView) itemView.findViewById(R.id.subredditImageView);
+            commentImageView = (ImageView) itemView.findViewById(R.id.commentImageView);
             subredditTitle = (TextView) itemView.findViewById(R.id.titleTextView);
             commentBodyText = (TextView) itemView.findViewById(R.id.bodyTextView);
             commentAuthorText = (TextView) itemView.findViewById(R.id.authorTextView);
@@ -93,10 +94,10 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
         }
     }
 
-    private List<Comment> mComments;
+    private ArrayList<Comment> mComments;
     private Context mContext;
 
-    public CommentAdapter(Context context, List<Comment> comments) {
+    public CommentAdapter(Context context, ArrayList<Comment> comments) {
         mContext = context;
         mComments = comments;
     }
@@ -109,7 +110,31 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
     // Usually involves inflating a layout from XML and returning the holder
     @Override
     public CommentAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        Context context = parent.getContext();
+
+        if (viewType == 1) {
+            // inflate your first item layout & return that viewHolder
+            Context context = parent.getContext();
+            LayoutInflater inflater = LayoutInflater.from(context);
+
+            // Inflate the custom layout
+            View commentView = inflater.inflate(R.layout.item_main_comment, parent, false);
+
+            // Return a new holder instance
+            CommentAdapter.ViewHolder viewHolder = new CommentAdapter.ViewHolder(commentView);
+            return viewHolder;
+        } else {
+            Context context = parent.getContext();
+            LayoutInflater inflater = LayoutInflater.from(context);
+
+            // Inflate the custom layout
+            View commentView = inflater.inflate(R.layout.item_comment, parent, false);
+
+            // Return a new holder instance
+            CommentAdapter.ViewHolder viewHolder = new CommentAdapter.ViewHolder(commentView);
+            return viewHolder;
+            // inflate your second item layout & return that viewHolder
+        }
+/*        Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
 
         // Inflate the custom layout
@@ -117,7 +142,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
 
         // Return a new holder instance
         CommentAdapter.ViewHolder viewHolder = new CommentAdapter.ViewHolder(commentView);
-        return viewHolder;
+        return viewHolder;*/
     }
 
     // Involves populating data into the item through holder
@@ -128,6 +153,20 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
 
         // Set item views based on your views and data model
         ImageView imageView = viewHolder.commentImageView;
+
+        JSONArray array;
+        //TODO add if the imageurl isnt null or empty
+
+            if (comment.getImageUrl() != null && comment.getImageUrl() != "") {
+                Picasso.with(getContext()).load(Uri.parse(comment.getImageUrl())).error(R.drawable.ic_nocover).into(imageView);
+                Toast.makeText(getContext(), comment.getImageUrl(), Toast.LENGTH_SHORT).show();
+            }
+
+
+
+
+
+
         //TODO fix this thumbnails contain empty string on test thread
 //        Picasso.with(getContext()).load(Uri.parse(comment.getThumbnail())).error(R.drawable.ic_nocover).into(imageView);
         //TextView titleTextView = viewHolder.subredditTitle;
@@ -197,9 +236,9 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
     }
 
     //Add replies to comments here
-    public void addItemsAtPosition(ArrayList<Comment> comments, int position) {
+    public void addItemsAtPosition(Comment comment, int position) {
         //Try this add it fake comment object just declare it here
-        Comment comment = comments.get(position);
+        //Comment comment = comments.get(position);
         JSONArray children;
         ArrayList<Comment> commentsArrayList;
 
@@ -226,13 +265,13 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
         //if comment depth 10 get the url and use RedditClient to api call
         if (commentsArrayList != null) {
             comment.setRepliesLength(commentsArrayList.size());
-/*
+
             for (int i = 0; i < commentsArrayList.size(); i++) {
                 mComments.add(position , commentsArrayList.get(i));
                 //notifyItemInserted(position + i);
 
-            }*/
-            mComments.addAll(position + 1, commentsArrayList);
+            }
+            //mComments.addAll(position + 1, commentsArrayList);
             //WORKS ADDs ONE mComments.addAll(position, commentsArrayList);
             //mComments.add(position + 1, comment);
             //notifyItemInserted(position);
@@ -266,6 +305,10 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
     }
 
 
-
+    @Override
+    public int getItemViewType(int position) {
+        if (position == 0) return 1;
+        else return 2;
+    }
 
 }
